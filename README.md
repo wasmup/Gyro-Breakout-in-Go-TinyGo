@@ -1,5 +1,7 @@
 # Gyro Breakout in Go (TinyGo)
 
+[Sample gameplay video](output.mp4)
+
 A bare-metal Breakout game for the STM32F429I-DISCO, written in Go and built with TinyGo. It uses the board's LCD, gyroscope, blue user button, and onboard ST-LINK.
 
 ## Play
