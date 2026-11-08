@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Gyro Breakout (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/gyro-breakout-go.elf",
+            "configFiles": ["board/stm32f429discovery.cfg"],
+            "gdbPath": "gdb",
+            "preLaunchTask": "Build firmware",
+            "runToEntryPoint": "Reset_Handler"
+        }
+    ]
+}
