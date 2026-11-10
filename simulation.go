@@ -5,8 +5,12 @@ const simulationSpeedTenths = 10
 // simulationController varies its aim between rounds while predicting the
 // next paddle impact and accounting for side-wall reflections.
 type simulationController struct {
-	aimOffset  int
-	reachedTop bool
+	aimOffset      int
+	reachedTop     bool
+	lastBrickHits  uint32
+	lastPaddleHits uint32
+	missedReturns  int
+	shiftStep      int
 }
 
 func newSimulationController(seed uint32, previousOffset int) simulationController {
@@ -21,6 +25,18 @@ func newSimulationController(seed uint32, previousOffset int) simulationControll
 }
 
 func (controller *simulationController) input(s *gameState) (paddleRate int, pressed bool) {
+	if s.brickHits != controller.lastBrickHits {
+		controller.missedReturns = 0
+		controller.lastBrickHits = s.brickHits
+	}
+	if s.paddleHits != controller.lastPaddleHits {
+		controller.lastPaddleHits = s.paddleHits
+		controller.missedReturns++
+		if controller.missedReturns >= 2 {
+			controller.shiftStep = (controller.shiftStep + 1) % 5
+			controller.missedReturns = 0
+		}
+	}
 	impact := s.ballX
 	if s.playing && s.vy > 0 {
 		impact += s.vx * (float32(paddleY-ballSize) - s.ballY) / s.vy
@@ -89,7 +105,10 @@ func (controller *simulationController) input(s *gameState) (paddleRate int, pre
 	if velocity < -8 {
 		velocity = -8
 	}
-	target := clamp(int(impact+ballSize/2-float32(paddleW/2)-5*velocity), 0, screenW-paddleW)
+	// Change the impact point after two returns without a brick hit. Alternate
+	// sides and increase the shift so repeated misses try different paths.
+	shifts := [...]int{0, 6, -6, 12, -12}
+	target := clamp(int(impact+ballSize/2-float32(paddleW/2)-5*velocity)+shifts[controller.shiftStep], 0, screenW-paddleW)
 	delta := target - s.paddle
 	gain := delta*4 - s.paddleFraction
 	if gain > 20 {

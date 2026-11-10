@@ -2,6 +2,38 @@ package game
 
 import "testing"
 
+func TestSimulationShiftsAfterTwoMissedReturns(t *testing.T) {
+	var s gameState
+	s.init(1, 0, false)
+	s.playing = true
+	controller := newSimulationController(1, 4)
+	controller.input(&s)
+	s.paddleHits++
+	controller.input(&s)
+	if controller.shiftStep != 0 {
+		t.Fatal("shifted after only one return")
+	}
+	s.paddleHits++
+	controller.input(&s)
+	if controller.shiftStep != 1 {
+		t.Fatal("did not shift after two returns without a brick hit")
+	}
+	s.paddleHits++
+	controller.input(&s)
+	s.hitBrick(0, 0) // A damaging hit also breaks the miss streak.
+	controller.input(&s)
+	s.paddleHits++
+	controller.input(&s)
+	if controller.shiftStep != 1 {
+		t.Fatal("brick damage did not reset the missed-return count")
+	}
+	s.paddleHits++
+	controller.input(&s)
+	if controller.shiftStep != 2 {
+		t.Fatal("did not try a different shift after another two misses")
+	}
+}
+
 func TestSimulationCompletesGames(t *testing.T) {
 	for seed := uint32(0); seed < 20; seed++ {
 		var s gameState

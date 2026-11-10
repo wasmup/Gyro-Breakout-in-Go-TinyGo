@@ -30,6 +30,8 @@ type gameState struct {
 	vx, vy       float32
 	playing      bool
 	finished     bool
+	brickHits    uint32
+	paddleHits   uint32
 
 	speedTenths       int
 	speedGestureReady bool
@@ -186,6 +188,7 @@ func (s *gameState) updateBall() {
 		}
 		hit, f, ix := paddleCollision(px, py, s.ballX, s.ballY, ballSize, s.paddle, paddleY, paddleW)
 		if s.vy > 0 && hit {
+			s.paddleHits++
 			s.vx = (ix + ballSize/2 - float32(s.paddle+paddleW/2)) / 5
 			s.vy = -5
 			s.ballX = ix + s.vx*scale/float32(steps)*(1-f)
@@ -219,6 +222,7 @@ func (s *gameState) updateBall() {
 
 // hitBrick returns true only when the second hit destroys the brick.
 func (s *gameState) hitBrick(row, col int) bool {
+	s.brickHits++
 	if !s.damaged[row][col] {
 		s.damaged[row][col] = true
 		return false
