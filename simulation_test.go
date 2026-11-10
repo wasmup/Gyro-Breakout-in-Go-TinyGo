@@ -66,16 +66,21 @@ type simulationPlatform struct {
 	speedRate        int
 	sawSpeedIncrease bool
 	sawSpeedDecrease bool
+	fireButton       bool
+	sawFireball      bool
 }
 
-func (p *simulationPlatform) Cycles() uint32    { p.cycles += frameCycles; return p.cycles }
-func (*simulationPlatform) Seed() uint32        { return 1 }
-func (*simulationPlatform) ButtonPressed() bool { return false }
+func (p *simulationPlatform) Cycles() uint32      { p.cycles += frameCycles; return p.cycles }
+func (*simulationPlatform) Seed() uint32          { return 1 }
+func (p *simulationPlatform) ButtonPressed() bool { return p.fireButton && p.gyroReads >= 20 }
 func (p *simulationPlatform) GyroRates() (int, int, bool) {
 	p.gyroReads++
 	return 250, p.speedRate, true
 }
 func (p *simulationPlatform) Rect(x, y, width, height int, color uint16) {
+	if width == ballSize && height == ballSize && color == red {
+		p.sawFireball = true
+	}
 	// The middle pixel in this row distinguishes the 1.1× digit from 1.0×.
 	if x == 302 && y == 5 && width == 2 && height == 2 && color == white {
 		p.sawSpeedIncrease = true
@@ -110,6 +115,19 @@ func TestSimulationStartsAnotherRound(t *testing.T) {
 	}()
 	RunSimulation(p)
 	t.Fatal("simulation returned")
+}
+
+func TestSimulationBlueButtonFires(t *testing.T) {
+	p := &simulationPlatform{fireButton: true}
+	defer func() {
+		if recovered := recover(); recovered != "second round started" {
+			t.Fatalf("simulation stopped unexpectedly: %v", recovered)
+		}
+		if !p.sawFireball {
+			t.Fatal("blue button did not fire during simulation")
+		}
+	}()
+	RunSimulation(p)
 }
 
 func TestSimulationOpensPathAboveBricks(t *testing.T) {

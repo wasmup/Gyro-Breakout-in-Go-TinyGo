@@ -117,7 +117,7 @@ func (controller *simulationController) input(s *gameState) (paddleRate int, pre
 		gain = (gain - 20) / 2
 	}
 	paddleRate = -clamp(gain, -100, 100)
-	// Press only to launch, then release so simulation never fires.
+	// Launch automatically; the physical button controls firing during play.
 	pressed = !s.playing && !s.previousButton
 	return paddleRate, pressed
 }

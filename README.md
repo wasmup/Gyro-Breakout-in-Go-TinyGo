@@ -12,7 +12,7 @@ For normal play, leave the blue button released when calibration finishes. Rotat
 
 Each brick takes two hits from the ball or a fireball: it turns red on the first hit and disappears on the second. The bonus brick starts blue and turns red when damaged. It adds two lives if the ball destroys it; a fireball destroys it without the bonus. Clear every brick to win. The elapsed round time appears below the result. After a win or loss, release and press the button to restart, then release and press again to launch.
 
-To start an automatic simulation, hold the blue button when calibration finishes. The controller plays repeated games without fireballs, initially aiming to open a center column and reach above the bricks. After two paddle returns without a brick hit, it shifts its aim to try a different trajectory. Each round starts at 1.0× speed; use the same rotation gesture as normal play to change it. The result remains visible briefly between rounds. Reset the board to return to normal play.
+To start an automatic simulation, hold the blue button when calibration finishes. The controller plays repeated games, initially aiming to open a center column and reach above the bricks. Press or hold the blue button during play to fire while the paddle moves automatically. After two paddle returns without a brick hit, the controller shifts its aim to try a different trajectory. Each round starts at 1.0× speed; use the same rotation gesture as normal play to change it. The result remains visible briefly between rounds. Reset the board to return to normal play.
 
 ## Build and flash
 

@@ -49,6 +49,10 @@ func run(p Platform, simulation bool) {
 			var pressed bool
 			if simulation {
 				paddle, pressed = controller.input(&s)
+				physicalButton := button()
+				if s.playing {
+					pressed = physicalButton
+				}
 			} else {
 				pressed = button()
 			}
